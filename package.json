@@ -1,0 +1,25 @@
+{
+  "name": "pgande-mrad-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run unit",
+    "unit": "APP_ENV=developement jest",
+    "dev": "nodemon --inspect src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/hapi": "^21.3.2",
+    "axios": "^1.5.1",
+    "dotenv": "^16.3.1",
+    "hapi": "^18.1.0",
+    "hapi-auth-bearer-token": "^8.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "stations-lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "staions.js",
+  "dependencies": {
+    "aws-sdk": "^2.1466.0",
+    "axios": "^1.5.1",
+    "json2csv": "^6.0.0-alpha.2"
+  }
+}
