@@ -10,28 +10,33 @@ Before setting up and deploying the Lambda function, make sure you have the foll
 - An AWS account with permissions to create Lambda functions, S3 buckets, and IAM roles.
 - AWS CLI configured with your AWS credentials.
 
+## Copy .env.sample to .env (if .env doesn't already exist)
+
+```
+cp -n .env.sample .env
+```
+
 ## Docker Setup
 
-1. Clone this repository to your local machine:
+1. Clone this repo to your local machine:
 
    ```bash
-   git clone <repository_url>
-   cd <repository_directory>
+   git clone https://github.com/vishalmaniya/pgande-mrad-api.git
+   cd gande-mrad-api
    ```
 
-2. Build the Docker image:
+2. Build and start the Docker Compose services:
 
    ```bash
-   docker build -t node-lambda-app .
+   docker-compose up -d
    ```
 
 3. Create a `.env` file in the root directory of the project with the following environment variables:
 
    ```
-   AWS_ACCESS_KEY_ID=<Your_AWS_Access_Key>
-   AWS_SECRET_ACCESS_KEY=<Your_AWS_Secret_Key>
-   AWS_REGION=<Your_AWS_Region>
-   S3_BUCKET_NAME=<Your_S3_Bucket_Name>
+   AWS_GATEWAY_URL=<Your_AWS_gateway_url>
+   AWS_GATEWAY_KEY=<Your_AWS_gateway_Key>
+   API_TOKEN=<Your_API_token>
    ```
 
 ## Usage
@@ -40,50 +45,67 @@ Before setting up and deploying the Lambda function, make sure you have the foll
 
 To run the Lambda function locally in a Docker container, follow these steps:
 
-1. Start a Docker container:
+1. Docker Compose will start the services defined in docker-compose.yml
 
    ```bash
-   docker run -p 3000:3000 --env-file .env node-lambda-app
+   docker-compose up -d
    ```
 
 2. Open a web browser or use a tool like Postman to make a GET request to:
 
    ```
-   http://localhost:3000/api/process-station-data
+   curl --location 'localhost:3000/stations' \
+   --header 'Authorization: Bearer <token>'
    ```
 
 ### AWS Deployment
 
-To deploy the Lambda function on AWS, follow these steps:
+Assuming you have created `stations` lambda function by adding required permission
+
+To deploy your AWS Lambda function using the provided command,
 
 1. Deploy the Lambda function to AWS by running the following command:
+   Navigate to the /src/lambda/stations directory
 
-   ```bash
-   npm run deploy
-   ```
+2. make sure you have installed node_module by running
 
-2. The Lambda function will be created on AWS. Make note of its ARN.
+```bash
+   npm install
+```
 
-3. You need to set up an AWS trigger for the Lambda function to run it manually. You can use an AWS S3 event trigger, AWS API Gateway, or any other suitable method.
+3. Create a zip file containing the Lambda function code and any dependencies:
+   zip -r deployment-package.zip .
 
-## Testing
+```bash
+  zip -r deployment-package.zip . -x "__tests__/*"
+```
+
+4. Update the Lambda function code using the AWS CLI:
+
+```bash
+  aws lambda update-function-code \
+  --function-name stations \
+  --zip-file fileb://deployment-package.zip
+```
+
+## Unit Test
 
 To run unit tests for the API call, execute the following command:
 
 ```bash
-npm test
+npm run unit
 ```
 
 ## Folder Structure
 
-- `src`: Contains the Lambda function code.
-- `test`: Contains unit tests for the Lambda function.
-- `scripts`: Contains deployment and testing scripts.
+- `src`: Contains the node js app code
+- `src/lambda`: Contains the Lambda function code.
+- `__test__`: Contains unit tests.
 
-## License
+## Demo API gateway url
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+To trigger `stations` lambda function, use below sample url:
 
----
-
-With Docker, you can containerize your Node.js AWS Lambda function for local development and deployment. Make sure to replace `<repository_url>`, `<repository_directory>`, and other placeholders with the appropriate values for your project.
+```
+https://pjrmvjpoui.execute-api.us-east-1.amazonaws.com/default/stations
+```
